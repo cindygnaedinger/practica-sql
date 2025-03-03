@@ -169,3 +169,40 @@ FROM
     CTE_total_sales
 WHERE total_sales > (SELECT promedio_sales FROM CTE_promedio_sales)
 ORDER BY total_sales DESC;
+--
+-- ¿Puedes escribir una consulta que use una CTE para calcular el número total de pedidos completados por cada cliente y luego devuelva solo aquellos clientes que tienen más pedidos completados que el promedio? Usa las tablas orders y customers.
+WITH CTE_total_pedidos AS (
+    SELECT customer_id,
+    COUNT(order_id) AS total_pedidos 
+    FROM orders
+    WHERE status = 'completed'
+    GROUP BY customer_id
+),
+    CTE_promedio_pedidos AS (
+        SELECT
+            AVG(total_pedidos) AS promedio_pedidos 
+        FROM CTE_total_pedidos
+    )
+SELECT
+    customer_id,
+    total_pedidos
+FROM CTE_total_pedidos
+WHERE total_pedidos > (SELECT promedio_pedidos FROM CTE_promedio_pedidos)
+ORDER BY total_pedidos DESC;
+--
+-- Escribe una consulta SQL que devuelva el customer_id, el número total de pedidos completados y el ranking de cada cliente basado en el número de pedidos completados. Usa una función de ventana para calcular el ranking. Ordena los resultados por el ranking de forma ascendente.
+WITH CTE_pedidos_completados AS (
+    SELECT customer_id,
+    COUNT(order_id) AS total_pedidos
+    FROM orders
+    WHERE status = "completed"
+    GROUP BY customer_id
+)
+SELECT customer_id,
+total_pedidos,
+DENSE_RANK() OVER (ORDER BY total_pedidos DESC) AS ranking
+FROM CTE_pedidos_completados
+ORDER BY ranking;
+
+-- ? RANK(): Si dos filas tienen el mismo valor, les asigna el mismo ranking, pero el siguiente ranking se salta los números correspondientes. Ejemplo: Si dos clientes tienen 3 pedidos (ranking 1), el siguiente cliente tendrá ranking 3 (se salta el 2). 
+-- ? DENSE_RANK(): Si dos filas tienen el mismo valor, les asigna el mismo ranking, pero el siguiente ranking no se salta números. Ejemplo: Si dos clientes tienen 3 pedidos (ranking 1), el siguiente cliente tendrá ranking 2.
