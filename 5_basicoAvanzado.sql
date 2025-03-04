@@ -144,4 +144,98 @@ SELECT
 FROM empleados
 GROUP BY departamento;
 
--- 
+-- Queremos obtener los nombres de los empleados que trabajan en los departamentos de IT o Finanzas. Usa una subconsulta en la cláusula WHERE con el operador IN para obtener esta información.
+SELECT
+    nombre,
+    apellido
+FROM empleados
+WHERE departamento IN ('IT', 'Finanzas');
+
+-- Queremos obtener los empleados cuyo salario sea superior al salario promedio de su propio departamento. Es decir, para cada empleado, debes comparar su salario con el promedio de su departamento.
+SELECT
+    CONCAT(nombre, " ", apellido) AS nombre_apellido,
+    departamento,
+    salario
+FROM empleados e
+WHERE salario > (
+    SELECT
+        AVG(salario)
+        FROM empleados
+        WHERE departamento = e.departamento -- Subconsulta correlacionada
+        GROUP BY departamento
+);
+-- La subconsulta hace referencia al campo departamento de la tabla empleados en la consulta principal (e.departamento). Esto es lo que hace que sea una subconsulta correlacionada.
+
+-- Queremos obtener el salario de cada empleado junto con el salario promedio de todos los empleados en la misma ciudad. Utiliza una función de ventana (OVER) para calcular el salario promedio sin necesidad de usar una subconsulta.
+SELECT
+    nombre,
+    salario,
+    ciudad,
+    AVG(salario) OVER (PARTITION BY ciudad) AS promedio_salario_ciudad
+FROM empleados
+ORDER BY ciudad;
+
+-- Queremos mostrar el nombre, apellido y salario de cada empleado, pero con un categorizado del salario en tres rangos: "Bajo" si el salario es menor a 3000. "Medio" si el salario está entre 3000 y 6000. "Alto" si el salario es mayor a 6000.
+SELECT
+    CONCAT(nombre, " ", apellido) AS nombre_apellido,
+    CASE
+        WHEN salario > 6000 THEN 'Alto',
+        WHEN salario BETWEEN 3000 AND 6000 THEN 'Medio',
+        WHEN salario < 3000 THEN 'Bajo'
+    END AS categoria_salarial
+FROM empleados;
+
+-- Queremos encontrar los departamentos que tienen más de 5 empleados. Para esto, utiliza una subconsulta en el FROM para contar los empleados por departamento y filtrar aquellos departamentos con más de 5 empleados.
+WITH CTE_cantidad_empleados AS(
+    SELECT
+    departamento,
+        COUNT(*) AS empleados_por_departamento
+    FROM empleados
+    GROUP BY departamento
+)
+SELECT
+    departamento,
+    empleados_por_departamento
+FROM CTE_cantidad_empleados
+WHERE empleados_por_departamento > 5
+ORDER BY departamento;
+
+-- Queremos encontrar el top 3 de empleados con los salarios más altos en cada departamento. Para esto, usa la función RANK() para asignar un ranking de salario dentro de cada departamento y luego filtra para mostrar solo los 3 primeros por departamento.
+WITH CTE_salario_departamento WITH(
+    SELECT
+        CONCAT(nombre, ' ', apellido) AS nombre_apellido,
+        departamento,
+        salario,
+        RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) ranking_salario
+    FROM empleados
+)
+SELECT
+    nombre_apellido,
+    departamento,
+    salario,
+    ranking_salario
+FROM CTE_salario_departamento
+WHERE ranking_salario <= 3
+ORDER BY departamento, ranking_salario;
+
+-- Queremos comparar el salario de cada empleado con el del empleado anterior y siguiente dentro de su mismo departamento, ordenado por salario.
+WITH CTE_salario_ant_post AS(
+    SELECT 
+        nombre,
+        apellido,
+        salario,
+        departamento,
+        LAG(salario) OVER(PARTITION BY departamento ORDER BY salario DESC) AS salario_anterior
+        LEAD(salario) OVER(PARTITION BY departamento ORDER BY salario DESC) AS salario_posterior
+    FROM empleados
+)
+SELECT
+    nombre,
+    apellido,
+    salario,
+    departamento,
+    salario_anterior,
+    salario_posterior
+FROM CTE_salario_ant_post
+ORDER BY departamento, salario DESC;
+
