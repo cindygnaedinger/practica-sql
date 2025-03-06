@@ -272,3 +272,113 @@ SELECT
     ranking_salario
 FROM CTE_ranking_salario
 WHERE salario = 2;
+
+-- Encuentra a los empleados cuyo salario es mayor que el promedio de su departamento.
+WITH CTE_promedio_salario AS(
+    SELECT 
+        departamento,
+        AVG(salario) AS salario_promedio
+    FROM empleados
+    GROUP BY departamento
+)
+SELECT
+    e.nombre,
+    e.departamento,
+    e.salario
+FROM empleados e
+INNER JOIN CTE_promedio_salario cte
+    ON e.departamento = cte.departamento
+WHERE e.salario > cte.salario_promedio
+ORDER BY e.salario DESC;
+
+-- Encuentra el empleado con el salario más alto en cada departamento.
+WITH CTE_ranking_salario AS(
+    SELECT
+        nombre,
+        departamento,
+        salario
+        RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) AS salario_mayor 
+    FROM empleados
+)
+SELECT
+    nombre,
+    departamento,
+    salario
+FROM CTE_ranking_salario
+WHERE salario_mayor = 1;
+
+-- Encuentra el segundo salario más alto en cada departamento.
+WITH CTE_salario_mayor AS(
+    SELECT
+        nombre,
+        departamento,
+        salario
+        DENSE_RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) AS ranking
+    FROM empleados
+)
+SELECT
+    nombre,
+    departamento,
+    salario,
+    ranking
+FROM CTE_salario_mayor
+WHERE ranking = 2;
+
+-- Encuentra el empleado con el salario más bajo en cada departamento, pero si hay más de uno con el mismo salario mínimo, muéstralos todos.
+WITH CTE_salario_menor AS (
+    SELECT
+        nombre,
+        departamento,
+        salario,
+        RANK() OVER (PARTITION BY departamento ORDER BY salario ASC) AS ranking 
+    FROM empleados
+)
+SELECT
+    nombre,
+    departamento,
+    salario
+FROM CTE_salario_menor
+WHERE ranking = 1;
+
+-- Encuentra los empleados cuyo salario esté por encima del promedio de su departamento.
+
+SELECT
+    nombre,
+    departamento,
+    salario,
+    AVG(salario) OVER (PARTITION BY departamento) AS salario_promedio
+FROM empleados 
+WHERE salario > AVG(salario) OVER (PARTITION BY departamento)
+ORDER BY departamento DESC;
+
+-- Lista los 3 empleados con los salarios más altos de cada departamento.
+WITH CTE_ranking_salario AS( 
+    SELECT
+        nombre,
+        departamento,
+        salario,
+        DENSE_RANK() OVER (PARTITION BY departamento ORDER BY salario DESC) AS ranking 
+    FROM empleados
+)
+SELECT
+    nombre,
+    departamento,
+    salario
+FROM CTE_ranking_salario
+WHERE ranking <= 3;
+
+-- Ahora lista los empleados con los 2 salarios más bajos en cada departamento.
+WITH CTE_ranking_salario AS( 
+    SELECT
+        nombre,
+        departamento,
+        salario,
+        ROW_NUMBER() OVER (PARTITION BY departamento ORDER BY salario ASC) AS ranking 
+    FROM empleados
+)
+SELECT
+    nombre,
+    departamento,
+    salario
+FROM CTE_ranking_salario
+WHERE ranking <= 2;
