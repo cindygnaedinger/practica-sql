@@ -239,3 +239,36 @@ SELECT
 FROM CTE_salario_ant_post
 ORDER BY departamento, salario DESC;
 
+-- Obtener los nombres de los empleados cuyo salario está en el top 3 de su departamento.
+WITH CTE_ranking_salario AS(
+    SELECT 
+        nombre,
+        departamento,
+        salario,
+        RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) AS ranking_salario
+    FROM empleados
+)
+SELECT 
+    nombre,
+    departamento,
+    salario,
+    ranking_salario
+FROM CTE_ranking_salario
+WHERE salario <= 3;
+
+-- Obtener el segundo salario más alto de cada departamento.
+WITH CTE_ranking_salario AS(
+    SELECT 
+        nombre,
+        departamento,
+        salario,
+        DENSE_RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) AS ranking_salario
+    FROM empleados
+)
+SELECT 
+    nombre,
+    departamento,
+    salario,
+    ranking_salario
+FROM CTE_ranking_salario
+WHERE salario = 2;
