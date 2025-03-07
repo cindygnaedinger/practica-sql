@@ -175,3 +175,49 @@ SELECT
 FROM CTE_tiempo_total
 GROUP BY departamento_id
 ORDER BY promedio_tiempo_total;
+
+-- Murder SQL
+select * 
+from crime_scene_report 
+where city = "SQL City" 
+AND type = "murder"
+AND date = "20180115";
+			  
+SELECT * 
+FROM person 
+WHERE (address_street_name = "Northwestern Dr" AND address_number = (
+SELECT MAX(address_number) FROM person WHERE address_street_name = "Northwestern Dr"))
+OR (name = "Annabel" AND address_street_name = "Franklin Ave" ); 
+              
+SELECT * 
+FROM interview i
+JOIN person p ON i.person_id = p.id
+  WHERE p.id IN (16371, 14887); 
+  
+select * 
+from get_fit_now_member 
+where membership_status = "gold"
+AND id LIKE "48Z%"; 
+
+select * from drivers_license where plate_number LIKE "%H42W%"; 
+
+select * from 'get_fit_now_check_in'
+WHERE check_in_date = "20180109"
+AND membership_id LIKE "48Z%";
+
+-- Write a solution to report the name and bonus amount of each employee with a bonus less than 1000.
+SELECT e.name, b.bonus
+FROM Employee e
+LEFT JOIN Bonus b ON e.empId = b.empId
+WHERE b.bonus < 1000 OR b.bonus IS NULL;
+
+-- Write a solution to find the number of times each student attended each exam. Return the result table ordered by student_id and subject_name.
+
+/*
+?¿Qué hace CROSS JOIN?
+CROSS JOIN crea todas las combinaciones posibles entre las filas de Students y Subjects.
+
+Esto significa que cada estudiante aparecerá emparejado con todas las materias disponibles, incluso si no ha asistido a un examen de esa materia.
+
+Este paso es clave porque asegura que cada estudiante tenga un registro para cada materia, incluso si nunca rindió un examen.
+*/
