@@ -1,0 +1,118 @@
+/* Apuntes del libro “Learning SQL, Second Edition, by Alan
+Beaulieu. Copyright 2009 O’Reilly Media, Inc., 978-0-596-52083-0.” */
+
+TIPOS DE TABLAS
+1. Tablas Permanentes
+- Son tablas que se crean explícitamente en la base de datos.
+- Cómo se crean: Usando la sentencia CREATE TABLE.
+
+2. Tablas Temporales
+- Son tablas que existen solo durante la ejecución de una consulta. Se generan a partir de los resultados de una subconsulta (subquery).
+- No se almacenan físicamente en la base de datos.
+- Son visibles y se puede interactuar con ellas dentro de la consulta principal.
+
+-- SELECT *
+-- FROM (SELECT nombre, salario FROM empleados WHERE salario > 3000) AS temp_table;
+
+ Tablas Virtuales (Vistas o Views)
+- Son consultas almacenadas en el diccionario de datos de la base de datos.
+- No almacenan datos físicamente, sino que se construyen dinámicamente al ser invocadas.
+- Simplifican consultas complejas y mejoran la seguridad al restringir el acceso a los datos.
+- Cómo se crean: Usando la sentencia CREATE VIEW.
+
+-- CREATE VIEW vista_empleados AS
+-- SELECT nombre, salario
+-- FROM empleados
+-- WHERE salario > 3000;
+
+TABLAS GENERADAS CON SUBQUERIES
+- Una subquery es una consulta contenida dentro de otra consulta.
+- Se agrupan dentro de paréntesis.
+- Pueden aparecer en diferentes partes de una consulta, como en SELECT, FROM, WHERE, etc.
+- Su rol principal es generar una tabla temporal con la que se puede interactuar dentro de la consulta principal.
+
+VISTAS O VIEWS
+- Una vista es una consulta almacenada en el diccionario de datos de la base de datos.
+- No almacena datos físicamente, sino que muestra los datos de las tablas subyacentes en tiempo real.
+- Mejora la claridad y reutilización del código.
+- Puede usarse para restringir el acceso a ciertos datos.
+- Las vistas se crean por diferentes motivos como ocultar columnas a los usuarios o simplificar diseños de base de datos complejos.
+
+-- CREATE VIEW vista_empleados_departamentos AS
+-- SELECT e.nombre AS empleado, d.nombre AS departamento
+-- FROM empleados e
+-- INNER JOIN departamentos d ON e.departamento_id = d.departamento_id;
+
+WHERE
+- Se usa como mecanismo de filtrado para devolver solo el result set que queremos.
+Se pueden incluir tantas condiciones como sean necesarias y se separan con AND, OR y NOT.
+
+- Combinación de AND, OR y NOT
+Puedes combinar estos operadores para crear condiciones más complejas. Sin embargo, es importante usar paréntesis () para definir el orden de evaluación de las condiciones, ya tienen mayor precedencia:
+NOT tiene la mayor precedencia.
+AND tiene mayor precedencia que OR.
+Usa paréntesis () para evitar confusiones y asegurar el orden correcto de evaluación.
+
+GROUP BY
+Sirve para encontrar tendencias. Se usa para agrupar información segun valores de columnas.
+
+ORDER BY
+La cláusula ORDER BY es el mecanismo para ordenar tu conjunto de resultados utilizando ya sea datos brutos de columnas o expresiones basadas en datos de columnas.
+
+ORDER CON expresiones
+Por ejemplo ordenar por los ultimos 3 digitos del fed_id:
+
+-- SELECT cust_id, cust_type_cd, city, state, fed_id
+--  -> FROM customer
+--  -> ORDER BY RIGHT(fed_id, 3);
+
+ORDER CON MARCADORES DE POSICIÓN NUMERICOS
+Por ejemplo, si queres ordenar por la segunda y quinta columna: 
+
+-- SELECT emp_id, title, start_date, fname, lname
+--  -> FROM employee
+--  -> ORDER BY 2, 5;
+
+Podrías querer usar esta función con moderación, ya que agregar una columna a la cláusula SELECT sin cambiar los números en la cláusula ORDER BY puede llevar a resultados inesperados. Personalmente, podría referenciar columnas por posición al escribir consultas ad hoc, pero siempre referencio columnas por nombre al escribir código.
+
+****    EJERCICIOS    *****
+3-1
+Retrieve the employee ID, first name, and last name for all bank employees. Sort by last
+name and then by first name.
+SELECT 
+    emp_id,
+    fname,
+    lname
+FROM employee 
+ORDER BY lname, fname;
+
+3-2
+Retrieve the account ID, customer ID, and available balance for all accounts whose
+status equals 'ACTIVE' and whose available balance is greater than $2,500.
+
+SELECT 
+    account_id,
+    cust_id,
+    avail_balance
+FROM account 
+WHERE status = 'ACTIVE'
+    AND avail_balance > 2500;
+
+3-3
+Write a query against the account table that returns the IDs of the employees who
+opened the accounts (use the account.open_emp_id column). Include a single row for
+each distinct employee.
+
+SELECT DISTINCT
+    open_emp_id
+FROM account;
+
+3-4
+Fill in the blanks (denoted by <#>) for this multi-data-set query to achieve the results
+shown here:
+
+ SELECT p.product_cd, a.cust_id, a.avail_balance
+ -> FROM product p INNER JOIN account <1>
+ -> ON p.product_cd = <2>
+ -> WHERE p.<3> = 'ACCOUNT'
+ -> ORDER BY <4>, <5>;
