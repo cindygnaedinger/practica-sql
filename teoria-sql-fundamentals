@@ -112,7 +112,85 @@ Fill in the blanks (denoted by <#>) for this multi-data-set query to achieve the
 shown here:
 
  SELECT p.product_cd, a.cust_id, a.avail_balance
- -> FROM product p INNER JOIN account <1>
- -> ON p.product_cd = <2>
- -> WHERE p.<3> = 'ACCOUNT'
- -> ORDER BY <4>, <5>;
+ -> FROM product p INNER JOIN account a
+ -> ON p.product_cd = a.product_cd
+ -> WHERE product_type_cd = 'ACCOUNT';
+
+ --
+
+ ----------- FILTROS ---> WHERE -----------
+
+ Condiciones de Equidad:
+ WHERE title = 'Teller';
+
+Condiciones de Inequidad:
+Se usa con los operadores  != o <> 
+WHERE pt.name <> 'Customer Accounts';
+
+Condiciones de rango:
+WHERE start_date < '2007-01-01';
+
+Operador BETWEEN
+Cuando tenes un limite an dos intancias diferentes.
+Siempre debes especificar primero el límite inferior del rango (después de BETWEEN) y luego el límite superior (después de AND).
+Ambos limites son inclusivos.
+WHERE start_date BETWEEN '2005-01-01' AND '2007-01-01';
+
+También se pueden usar rangos con cadenas:
+WHERE cust_type_cd = 'I'
+ -> AND fed_id BETWEEN '500-00-0000' AND '999-99-9999';
+
+Cuando tenemos un grupo de valores individuales usamos IN, no importa la cantidad de valores que haya:
+WHERE product_cd IN ('CHK','SAV','CD','MM');
+
+SUBQUERIES CON WHERE
+Además de escribir tu propio conjunto de expresiones, como ('CHK', 'SAV', 'CD', 'MM'), puedes usar una subconsulta para generar un conjunto sobre la marcha.
+
+Por ejemplo, los cuatro tipos de productos utilizados en la consulta anterior tienen un product_type_cd de 'ACCOUNT', así que ¿por qué no usar una subconsulta en la tabla de productos para recuperar los cuatro códigos de producto en lugar de nombrarlos explícitamente?
+WHERE product_cd IN (SELECT product_cd FROM product
+ -> WHERE product_type_cd = 'ACCOUNT');
+
+NOT IN
+Se usa para verificar que una expresion no existe.
+WHERE product_cd NOT IN ('CHK','SAV','CD','MM');
+
+Condiciones de Coincidencia
+Por ejemplo, si queres buscar los empleados que empiezan con T.
+WHERE LEFT(lname, 1) = 'T';
+De todas formas, con LEFT no tenemos mucha flexibilidad.
+
+Por eso, también podemos usar caracteres comodín.
+Al buscar coincidencias parciales en cadenas, podrías estar interesado en:
+
+Cadenas que comienzan o terminan con un determinado carácter.
+Cadenas que comienzan o terminan con una subcadena específica.
+Cadenas que contienen un determinado carácter en cualquier posición.
+Cadenas que contienen una subcadena en cualquier parte de la cadena.
+Cadenas con un formato específico, sin importar los caracteres individuales
+% se usa para cualquier número de caracteres 
+_ se usa para exactamente un caracter.
+WHERE lname LIKE '_a%e%';
+WHERE fed_id LIKE '___-__-____';
+ WHERE lname LIKE 'F%' OR lname LIKE 'G%';
+
+
+EXPRESIONES REGULARES
+Incluso más flexibilidad que los comodines.
+Este filtro es igual al anterior pero con regexp:
+WHERE lname REGEXP '^[FG]';
+
+
+NULL
+Casos en los que un valor puede estar ausente en una base de datos:
+No aplicable
+
+Cuando un campo no es relevante en un contexto específico.
+📌 Ejemplo: El ID del empleado en una transacción realizada en un cajero automático (ATM), donde no hay un empleado involucrado.
+Valor aún no conocido
+
+Cuando un dato no está disponible en el momento de la creación del registro.
+📌 Ejemplo: El ID fiscal federal de un cliente cuando se crea su cuenta, pero aún no ha sido proporcionado.
+Valor indefinido
+
+Cuando un dato depende de otra información que aún no existe en la base de datos.
+📌 Ejemplo: Se crea una cuenta para un producto que todavía no ha sido agregado a la base de datos.
