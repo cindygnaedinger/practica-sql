@@ -218,3 +218,18 @@ INNER JOIN llamadas l
 GROUP BY a.nombre, t.fecha_turno, t.hora_inicio, t.hora_fin
 HAVING duracion_turno_horas > 8
    AND COUNT(l.llamada_id) >= 5;
+
+   -- Encuentra los agentes que han atendido más llamadas que el promedio de llamadas atendidas por todos los agentes.
+
+SELECT
+	a.nombre AS agente,
+    COUNT(l.llamada_id) AS conteo_llamadas
+FROM llamadas l 
+INNER JOIN agentes a 
+ON l.agente_id = l.agente_id
+GROUP BY a.nombre
+HAVING COUNT(l.llamada_id) > (
+	SELECT
+	AVG(llamada_id) AS promedio_llamadas
+FROM llamadas
+);

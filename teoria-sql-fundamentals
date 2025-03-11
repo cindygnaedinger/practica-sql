@@ -194,3 +194,79 @@ Valor indefinido
 
 Cuando un dato depende de otra información que aún no existe en la base de datos.
 📌 Ejemplo: Se crea una cuenta para un producto que todavía no ha sido agregado a la base de datos.
+
+-----------------------------------------
+
+Consultas en Tablas Múltiples
+
+CROSS JOIN O PRODUCTO CARTESIANO
+Definición:
+Un CROSS JOIN genera el producto cartesiano de dos tablas.
+Combina todas las filas de la primera tabla con todas las filas de la segunda tabla.
+No utiliza una condición de unión (ON).
+Comportamiento:
+Si la primera tabla tiene N filas y la segunda tiene M filas, el resultado tendrá N × M filas.
+No filtra ni excluye filas basado en condiciones.
+-- SELECT
+--     c.nombre AS color,
+--     t.talla
+-- FROM colores c
+-- CROSS JOIN tallas t;
+
+OUTER JOIN
+El OUTER JOIN filtra filas basado en la condición de unión (ON), pero incluye filas sin coincidencias.
+El resultado no es un producto cartesiano, ya que no combina todas las filas de ambas tablas.
+Puede ser LEFT JOI, RIGHT JOIN, FULL JOIN.
+
+INNER JOIN
+Devuelve solo las filas que tienen coincidencias en ambas tablas.
+La condición de unión (ON) define cómo se relacionan las tablas.
+El orden en que escribes las tablas en el FROM y el JOIN no afecta el resultado, siempre y cuando la condición de unión sea correcta.
+
+USING
+Cuando se repite la misma condicion en el ON.
+
+IMPORTA EL ORDEN DE LAS TABLAS EN EL JOIN?
+
+Si estás confundido acerca de por qué las tres versiones de la consulta de cuenta/empleado/cliente arrojan los mismos resultados, ten en cuenta que SQL es un lenguaje no procedural, lo que significa que describes lo que deseas recuperar y qué objetos de la base de datos deben estar involucrados, pero es responsabilidad del servidor de la base de datos determinar la mejor manera de ejecutar tu consulta. Utilizando estadísticas recopiladas de los objetos de tu base de datos, el servidor debe elegir una de las tres tablas como punto de partida (la tabla elegida se conoce como la tabla impulsora o driving table), y luego decidir en qué orden unir las tablas restantes. Por lo tanto, el orden en que las tablas aparecen en tu cláusula FROM no es significativo.
+
+Sin embargo, si crees que las tablas en tu consulta deben unirse en un orden particular, puedes colocar las tablas en el orden deseado y luego especificar la palabra clave STRAIGHT_JOIN en MySQL, solicitar la opción FORCE ORDER en SQL Server o usar las sugerencias del optimizador ORDERED o LEADING en Oracle Database. 
+
+
+Una forma de pensar en una consulta que utiliza tres o más tablas es como una bola de nieve rodando colina abajo. Las primeras dos tablas hacen que la bola comience a rodar, y cada tabla subsiguiente se agrega a la bola de nieve a medida que avanza colina abajo. Puedes pensar en la bola de nieve como el conjunto de resultados intermedio, que va recogiendo más y más columnas a medida que se unen las tablas subsiguientes. Por lo tanto, la tabla employee no se está uniendo realmente a la tabla account, sino más bien al conjunto de resultados intermedio creado cuando se unieron las tablas customer y account.
+
+
+USAR SUBQUERIES COMO TABLAS 🤯
+-- 1 SELECT a.account_id, a.cust_id, a.open_date, a.product_cd
+-- 2 FROM account a INNER JOIN
+-- 3 (SELECT emp_id, assigned_branch_id
+-- 4 FROM employee
+-- 5 WHERE start_date < '2007-01-01'
+-- 6 AND (title = 'Teller' OR title = 'Head Teller')) e
+-- 7 ON a.open_emp_id = e.emp_id
+-- 8 INNER JOIN
+-- 9 (SELECT branch_id
+-- 10 FROM branch
+-- 11 WHERE name = 'Woburn Branch') b
+-- 12 ON e.assigned_branch_id = b.branch_id;
+
+USAR LA MISMA TABLA DOS VECES 
+Si estás uniendo varias tablas, es posible que necesites unir la misma tabla más de una vez. En la base de datos de ejemplo, por ejemplo, hay claves foráneas a la tabla branch tanto desde la tabla account (la sucursal donde se abrió la cuenta) como desde la tabla employee (la sucursal donde trabaja el empleado). Si deseas incluir ambas sucursales en tu conjunto de resultados, puedes incluir la tabla branch dos veces en la cláusula FROM, uniéndola una vez a la tabla employee y otra vez a la tabla account. Para que esto funcione, deberás asignar a cada instancia de la tabla branch un alias diferente, de modo que el servidor sepa a cuál te refieres en las distintas cláusulas, como en:
+--  SELECT a.account_id, e.emp_id,
+--  -> b_a.name open_branch, b_e.name emp_branch
+--  -> FROM account a INNER JOIN branch b_a
+--  -> ON a.open_branch_id = b_a.branch_id
+--  -> INNER JOIN employee e
+--  -> ON a.open_emp_id = e.emp_id
+--  -> INNER JOIN branch b_e
+--  -> ON e.assigned_branch_id = b_e.branch_id
+--  -> WHERE a.product_cd = 'CHK';
+
+SELF JOIN
+No solo puedes incluir la misma tabla más de una vez en una consulta, sino que también puedes unir una tabla consigo misma. Esto puede parecer extraño al principio, pero hay razones válidas para hacerlo. Por ejemplo, la tabla employee incluye una clave foránea autoreferenciada, lo que significa que tiene una columna (superior_emp_id) que apunta a la clave primaria dentro de la misma tabla. Esta columna apunta al manager del empleado (a menos que el empleado sea el jefe principal, en cuyo caso la columna es NULL).
+
+Usando una autounión (o self-join), puedes escribir una consulta que liste el nombre de cada empleado junto con el nombre de su manager.
+--  SELECT e.fname, e.lname,
+--  -> e_mgr.fname mgr_fname, e_mgr.lname mgr_lname
+--  -> FROM employee e INNER JOIN employee e_mgr
+--  -> ON e.superior_emp_id = e_mgr.emp_id;
