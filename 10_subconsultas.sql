@@ -47,3 +47,23 @@ conteo_llamada,
 ranking
 FROM CTE_ranking
 ORDER BY ranking DESC;
+
+-- Encuentra los agentes que han trabajado más de 8 horas en un turno y han atendido al menos 5 llamadas en el 
+-- mismo día. 
+-- Muestra el nombre del agente, la fecha del turno, la duración del turno en horas y la cantidad de 
+-- llamadas atendidas.
+SELECT 
+	a.nombre AS agente,
+    t.fecha_turno,
+    TIME_TO_SEC(TIMEDIFF(t.hora_fin, t.hora_inicio)) / 3600 AS duracion_turno_horas,
+    COUNT(l.llamada_id) AS cantidad_llamadas
+FROM agentes a 
+INNER JOIN turnos t 
+ON a.agente_id = t.agente_id
+INNER JOIN llamadas l 
+ON a.agente_id = l.agente_id
+AND l.fecha_llamada = t.fecha_turno
+GROUP BY a.nombre, t.fecha_turno, t.hora_inicio, t.hora_fin
+HAVING duracion_turno_horas > 8
+AND COUNT(l.llamada_id) >= 5
+ORDER BY cantidad_llamadas DESC;
