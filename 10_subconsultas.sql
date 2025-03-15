@@ -67,3 +67,18 @@ GROUP BY a.nombre, t.fecha_turno, t.hora_inicio, t.hora_fin
 HAVING duracion_turno_horas > 8
 AND COUNT(l.llamada_id) >= 5
 ORDER BY cantidad_llamadas DESC;
+
+-- Encuentra los agentes que han recibido una puntuación de satisfacción promedio mayor a 4 y han atendido al 
+-- menos 10 llamadas. 
+-- Muestra el nombre del agente, la satisfacción promedio y la cantidad de llamadas atendidas.
+SELECT 
+a.nombre AS agente,
+AVG(l.satisfaccion_cliente) AS promedio_satisfaccion,
+COUNT(l.llamada_id) AS cantidad_llamadas
+FROM agentes a 
+INNER JOIN llamadas l 
+ON a.agente_id = l.agente_id 
+GROUP BY a.nombre 
+HAVING AVG(l.satisfaccion_cliente) > 4
+AND COUNT(l.llamada_id) >= 10
+ORDER BY cantidad_llamadas DESC;
