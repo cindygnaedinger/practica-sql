@@ -88,7 +88,7 @@ SELECT
     nombre,
     apellido,
     departamento,
-    CASE salario
+    CASE 
         WHEN salario > 6000 THEN "Alto",
         WHEN salario BETWEEN 3000 AND 6000 THEN "Medio",
         WHEN salario < 3000 THEN "Bajo"

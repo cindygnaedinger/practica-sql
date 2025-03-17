@@ -38,4 +38,26 @@ SELECT
 FROM ranking_ventas
 WHERE ranking = 1;
 
+-- Tu tarea es generar un reporte que clasifique los pedidos en tres categorías según su monto: "Alto Valor": Si el monto es mayor a 500. "Medio Valor": Si el monto está entre 100 y 500 (inclusive). "Bajo Valor": Si el monto es menor a 100 Además, debes contar cuántos pedidos hay en cada categoría y mostrar el resultado.
+CREATE TABLE pedidos (
+    pedido_id INT PRIMARY KEY,
+    cliente_id INT,
+    monto DECIMAL(10, 2),
+    fecha_pedido DATE,
+    estado_pedido VARCHAR(50) -- Puede ser: "Completado", "Pendiente", "Cancelado"
+);
 
+SELECT
+    COUNT(pedido_id) AS cantidad_categoria,
+    CASE 
+    WHEN monto > 500 THEN "Alto Valor"
+    WHEN monto BETWEEN 100 AND 500 THEN "Medio Valor"
+    WHEN monto < 100 THEN "Bajo Valor"
+        END AS monto_clasificacion
+FROM pedidos
+GROUP BY 
+CASE 
+    WHEN monto > 500 THEN "Alto Valor"
+    WHEN monto BETWEEN 100 AND 500 THEN "Medio Valor"
+    WHEN monto < 100 THEN "Bajo Valor"
+        END;
