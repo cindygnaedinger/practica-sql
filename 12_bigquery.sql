@@ -168,3 +168,69 @@ ORDER BY m.total_llamadas DESC;
 
 -- Evitar Cálculos Redundantes: En lugar de calcular SUM(l.duracion_segundos) / 3600 en múltiples lugares, podrías almacenar este valor en una variable temporal.
 
+-- CONSULTA OPTIMIZADA
+
+WITH metricas_agentes AS (
+    SELECT
+        a.agente_id,
+        a.nombre_agente,
+        COUNT(l.llamada_id) AS total_llamadas,
+        AVG(l.duracion_segundos) AS duracion_promedio,
+        AVG(l.satisfaccion_cliente) AS satisfaccion_promedio,
+        COUNT(l.llamada_id) / NULLIF(SUM(l.duracion_segundos) / 3600, 0) AS llamadas_por_hora, -- Evitar división por cero
+        COUNTIF(l.resuelta = 1) / COUNT(l.llamada_id) * 100 AS tasa_resolucion,
+        AVG(TIMESTAMP_DIFF(l.fecha_hora_inicio, l.fecha_hora_atencion, SECOND)) AS tiempo_espera_promedio,
+        COUNTIF(l.abandonada = 1) AS llamadas_abandonadas
+    FROM
+        `nombre_proyecto.nombre_dataset.llamadas` l
+    JOIN
+        `nombre_proyecto.nombre_dataset.agentes` a
+    ON
+        l.agente_id = a.agente_id
+    WHERE
+        l.fecha_hora_inicio BETWEEN '2023-01-01' AND '2023-12-31' -- Filtrar por un rango de fechas para optimizar
+    GROUP BY
+        a.agente_id, a.nombre_agente
+),
+promedios AS (
+    SELECT
+        AVG(duracion_promedio) AS duracion_promedio_global,
+        AVG(satisfaccion_promedio) AS satisfaccion_promedio_global,
+        AVG(llamadas_por_hora) AS llamadas_por_hora_global,
+        AVG(tasa_resolucion) AS tasa_resolucion_global,
+        AVG(tiempo_espera_promedio) AS tiempo_espera_promedio_global,
+        AVG(llamadas_abandonadas) AS llamadas_abandonadas_global
+    FROM
+        metricas_agentes
+)
+SELECT
+    m.agente_id,
+    m.nombre_agente,
+    m.total_llamadas,
+    m.duracion_promedio,
+    CASE
+        WHEN m.duracion_promedio < p.duracion_promedio_global THEN 'Por debajo del promedio'
+        WHEN m.duracion_promedio > p.duracion_promedio_global THEN 'Por encima del promedio'
+        ELSE 'En el promedio'
+    END AS rendimiento_duracion,
+    m.satisfaccion_promedio,
+    CASE
+        WHEN m.satisfaccion_promedio < p.satisfaccion_promedio_global THEN 'Por debajo del promedio'
+        WHEN m.satisfaccion_promedio > p.satisfaccion_promedio_global THEN 'Por encima del promedio'
+        ELSE 'En el promedio'
+    END AS rendimiento_satisfaccion,
+    m.llamadas_por_hora,
+    CASE
+        WHEN m.llamadas_por_hora < p.llamadas_por_hora_global THEN 'Por debajo del promedio'
+        WHEN m.llamadas_por_hora > p.llamadas_por_hora_global THEN 'Por encima del promedio'
+        ELSE 'En el promedio'
+    END AS rendimiento_eficiencia,
+    m.tasa_resolucion,
+    m.tiempo_espera_promedio,
+    m.llamadas_abandonadas
+FROM
+    metricas_agentes m
+CROSS JOIN
+    promedios p
+ORDER BY
+    m.total_llamadas DESC;
