@@ -35,3 +35,13 @@ INNER JOIN `nombre_proyecto.nombre_dataset.llamadas` l
 ON a.agente_id = l.agente_id 
 GROUP BY a.nombre
 ORDER BY promedio_duracion_llamada DESC;
+
+-- Contar el número de llamadas atendidas por cada departamento.
+SELECT
+    a.departamento,
+    COUNT(l.llamada_id) AS cantidad_llamadas 
+FROM agentes a 
+INNER JOIN llamadas l 
+ON a.agente_id = l.agente_id 
+GROUP BY a.departamento 
+ORDER BY cantidad_llamadas DESC;
