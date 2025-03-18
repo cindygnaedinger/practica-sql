@@ -24,3 +24,14 @@ FROM
     ventas_mensuales
 ORDER BY
     mes, categoria;
+
+-- Calcular la duración promedio de las llamadas atendidas por cada agente.
+SELECT
+    a.nombre AS agente,
+    AVG(l.duracion_segundos) AS promedio_duracion_llamada
+FROM 
+`nombre_proyecto.nombre_dataset.agentes` a 
+INNER JOIN `nombre_proyecto.nombre_dataset.llamadas` l 
+ON a.agente_id = l.agente_id 
+GROUP BY a.nombre
+ORDER BY promedio_duracion_llamada DESC;
