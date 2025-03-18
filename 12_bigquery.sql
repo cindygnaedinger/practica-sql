@@ -45,3 +45,14 @@ INNER JOIN llamadas l
 ON a.agente_id = l.agente_id 
 GROUP BY a.departamento 
 ORDER BY cantidad_llamadas DESC;
+
+-- Calcular la satisfacción promedio del cliente para cada agente.
+SELECT
+    a.nombre AS agente,
+    AVG(l.satisfaccion_cliente) AS promedio_satisfaccion_cliente
+FROM agente a 
+INNER JOIN llamadas l 
+ON a.agente_id = l.agente_id 
+GROUP BY a.nombre
+ORDER BY promedio_satisfaccion_cliente DESC;
+
