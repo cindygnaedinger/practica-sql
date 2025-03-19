@@ -1,0 +1,146 @@
+¿Qué es el Linaje de Datos?
+El linaje de datos es el rastro o la historia de los datos a lo largo de su ciclo de vida. Básicamente, responde a preguntas como:
+
+¿De dónde vienen los datos?
+
+¿Cómo se transforman los datos a lo largo del tiempo?
+
+¿Quién los ha modificado?
+
+¿Dónde se almacenan?
+
+¿Cómo se utilizan los datos en informes, modelos o aplicaciones?
+
+En otras palabras, el linaje de datos es como un "árbol genealógico" de los datos, que muestra su origen, transformaciones y destino final.
+
+¿Por qué es Importante el Linaje de Datos?
+Transparencia:
+
+Permite entender cómo se han generado los datos y qué procesos han intervenido en su transformación.
+
+Ayuda a identificar errores o inconsistencias en los datos.
+
+Cumplimiento Normativo:
+
+En industrias reguladas (como banca, salud o seguros), es crucial demostrar de dónde provienen los datos y cómo se han procesado para cumplir con normativas como GDPR, HIPAA, etc.
+
+Calidad de los Datos:
+
+Facilita la identificación de problemas de calidad, como datos duplicados, incompletos o incorrectos.
+
+Impacto de Cambios:
+
+Si se modifica una fuente de datos o un proceso de transformación, el linaje permite evaluar qué informes, modelos o aplicaciones se verán afectados.
+
+Colaboración:
+
+Proporciona una visión clara de los flujos de datos, lo que facilita la colaboración entre equipos (ingeniería de datos, análisis de datos, negocio, etc.).
+
+Componentes del Linaje de Datos
+Origen de los Datos:
+
+Fuentes de datos (bases de datos, APIs, archivos CSV, etc.).
+
+Metadatos asociados (nombre de la fuente, descripción, propietario, etc.).
+
+Transformaciones:
+
+Procesos ETL (Extracción, Transformación y Carga) o ELT.
+
+Herramientas utilizadas (Apache Airflow, dbt, Spark, etc.).
+
+Código SQL o scripts que modifican los datos.
+
+Destino de los Datos:
+
+Almacenamiento final (data warehouses, data lakes, etc.).
+
+Aplicaciones o informes que consumen los datos.
+
+Metadatos:
+
+Información sobre los datos, como esquemas, tipos de datos, descripciones, etc.
+
+Ejemplo de Linaje de Datos
+Imagina que trabajas en un call center y tienes los siguientes flujos de datos:
+
+Origen:
+
+Datos de llamadas entrantes desde un sistema de telefonía (CSV o API).
+
+Datos de agentes desde una base de datos SQL.
+
+Transformaciones:
+
+Los datos de llamadas se limpian y transforman usando un script de Python.
+
+Los datos de agentes se unen con los datos de llamadas usando SQL en BigQuery.
+
+Destino:
+
+Los datos transformados se almacenan en una tabla de BigQuery.
+
+Se utilizan para generar un informe en Tableau.
+
+Linaje Visual:
+Copy
+[Origen] -> [Transformación] -> [Destino]
+-----------------------------------------
+1. Llamadas (CSV/API) -> Limpieza (Python) -> Tabla BigQuery -> Informe Tableau
+2. Agentes (SQL) -> Unión (SQL) -> Tabla BigQuery -> Informe Tableau
+Herramientas para Gestionar el Linaje de Datos
+Existen herramientas especializadas que ayudan a visualizar y gestionar el linaje de datos. Algunas de las más populares son:
+
+Apache Atlas:
+
+Herramienta de código abierto para la gestión de metadatos y linaje de datos.
+
+Usada comúnmente en entornos de Hadoop.
+
+DataHub (desarrollado por LinkedIn):
+
+Plataforma de metadatos que incluye funcionalidades de linaje de datos.
+
+Alation:
+
+Herramienta comercial que ofrece catálogo de datos y linaje.
+
+dbt (Data Build Tool):
+
+Herramienta de transformación de datos que genera automáticamente el linaje de los datos.
+
+BigQuery Lineage:
+
+BigQuery ofrece funcionalidades nativas para rastrear el linaje de los datos, especialmente si usas herramientas como Dataform o dbt.
+
+Ejemplo de Linaje en BigQuery
+Si usas BigQuery junto con dbt, puedes generar automáticamente el linaje de los datos. Por ejemplo:
+
+Origen:
+
+Tabla raw_llamadas en BigQuery.
+
+Transformación:
+
+Script de dbt que limpia y transforma los datos:
+
+sql
+Copy
+SELECT
+    llamada_id,
+    agente_id,
+    cliente_id,
+    fecha_hora_inicio,
+    duracion_segundos,
+    satisfaccion_cliente
+FROM
+    raw_llamadas
+WHERE
+    duracion_segundos > 0;
+Destino:
+
+Tabla clean_llamadas en BigQuery.
+
+Linaje:
+
+dbt genera automáticamente un gráfico de linaje que muestra cómo raw_llamadas se transforma en clean_llamadas.

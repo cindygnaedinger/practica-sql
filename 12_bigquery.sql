@@ -234,3 +234,66 @@ CROSS JOIN
     promedios p
 ORDER BY
     m.total_llamadas DESC;
+
+-- ?? 1. Particionamiento (Partitioning)
+-- El particionamiento divide una tabla en segmentos más pequeños (llamados particiones) basados en el valor de una columna, como una fecha. Esto permite que BigQuery escanee solo las particiones relevantes en lugar de toda la tabla, lo que reduce el costo y mejora el rendimiento.
+
+-- Cómo se Define el Particionamiento:
+-- Se especifica al crear la tabla usando la cláusula PARTITION BY.
+
+-- Las columnas comunes para particionar son las de tipo DATE o TIMESTAMP.
+
+CREATE TABLE `nombre_proyecto.nombre_dataset.llamadas`
+(
+    llamada_id STRING,
+    agente_id STRING,
+    cliente_id STRING,
+    fecha_hora_inicio TIMESTAMP,
+    fecha_hora_fin TIMESTAMP,
+    duracion_segundos INT64,
+    satisfaccion_cliente INT64,
+    resuelta BOOL,
+    abandonada BOOL
+)
+PARTITION BY DATE(fecha_hora_inicio); -- Particionamiento por fecha
+
+
+-- Beneficios:
+-- Reducción de costos: BigQuery solo escanea las particiones necesarias.
+
+-- Mejor rendimiento: Las consultas son más rápidas al trabajar con menos datos.
+
+-- ?? 2. Agrupamiento (Clustering)
+-- El agrupamiento (clustering) organiza los datos físicamente dentro de cada partición basándose en el orden de una o más columnas. Esto mejora el rendimiento de las consultas que filtran o agrupan por esas columnas.
+
+-- Cómo se Define el Agrupamiento:
+-- Se especifica al crear la tabla usando la cláusula CLUSTER BY.
+
+-- Puedes agrupar por una o varias columnas.
+
+CREATE TABLE `nombre_proyecto.nombre_dataset.llamadas`
+(
+    llamada_id STRING,
+    agente_id STRING,
+    cliente_id STRING,
+    fecha_hora_inicio TIMESTAMP,
+    fecha_hora_fin TIMESTAMP,
+    duracion_segundos INT64,
+    satisfaccion_cliente INT64,
+    resuelta BOOL,
+    abandonada BOOL
+)
+PARTITION BY DATE(fecha_hora_inicio) -- Particionamiento por fecha
+CLUSTER BY agente_id, cliente_id; -- Agrupamiento por agente_id y cliente_id
+
+-- Optimización de consultas: Las consultas que filtran o agrupan por las columnas agrupadas son más eficientes.
+
+-- Reducción de costos: Menos datos escaneados debido a la organización física de los datos.
+
+
+--  Modificación de una Tabla Existente
+-- Si ya tienes una tabla creada y quieres agregar particionamiento o agrupamiento, puedes hacerlo usando la cláusula ALTER TABLE.
+
+ALTER TABLE `nombre_proyecto.nombre_dataset.llamadas`
+ADD PARTITION BY DATE(fecha_hora_inicio), -- Agregar particionamiento
+ADD CLUSTER BY agente_id, cliente_id; -- Agregar agrupamiento
