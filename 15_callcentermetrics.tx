@@ -1,0 +1,123 @@
+# Key Call Center Metrics:
+
+
+## Average Handle Time (AHT): The average duration of a call, including hold time and after-call work.
+TIEMPO MEDIO DE OPERACIÓN (TMO)
+Cómo se calcula el AHT
+- Se calcula sumando el tiempo total de las llamadas y dividiéndolo entre el número total de llamadas atendidas. 
+- Incluye el tiempo de espera, el tiempo de conversación y las pausas. 
+- También incluye el tiempo que se invierte en buscar información o documentación. 
+Cómo mejorar el AHT 
+- Mejorar la formación de los agentes.
+- Mejorar las herramientas de los agentes.
+- Utilizar herramientas de automatización, como los sistemas de IVR.
+- Establecer expectativas claras.
+- Grabar las llamadas de los agentes para identificar deficiencias.
+- Utilizar las llamadas grabadas para capacitar a los agentes.
+Beneficios de un AHT bajo Mejora la satisfacción del cliente, Mejora el rendimiento y la productividad, Mejora la capacidad de atención al cliente, Optimiza los recursos
+
+
+## First Call Resolution (FCR): The percentage of calls resolved on the first attempt.
+RESOLUCIÓN EN LA PRIMERA LLAMADA: mide la capacidad de un call center para resolver una llamada en el primer contacto. 
+Es una herramienta para evaluar la calidad del servicio y la eficiencia del equipo. 
+Cómo se calcula el FCR 
+- Se divide el número de llamadas resueltas en el primer contacto por el número total de llamadas.
+- El resultado se multiplica por 100 para obtener el porcentaje de FCR.
+
+
+## Service Level: The percentage of calls answered within a specific time threshold (e.g., 80% of calls answered within 20 seconds).
+NIVEL DE SERVICIO: es una métrica que mide el porcentaje de llamadas atendidas en un tiempo determinado. Es una herramienta que permite evaluar la calidad del servicio y la experiencia del cliente. 
+Cómo se calcula 
+- Se expresa como "X% de llamadas respondidas en Y segundos".
+- Por ejemplo, un nivel de servicio de "80% de llamadas respondidas en 20 segundos" significa que el 80% de las llamadas entrantes deben ser respondidas en 20 segundos.
+
+-- Abandonment Rate: The percentage of calls abandoned by customers before being answered.
+ABANDONO DE LLAMADAS: es el porcentaje de llamadas que se cortan antes de que un agente atienda al cliente. Se considera un indicador de mal servicio al cliente. 
+Causas del abandono de llamadas 
+- Los clientes se frustran por los tiempos de espera
+- Fallan las llamadas automáticas
+- Los clientes no se sienten satisfechos con el servicio
+- No se resuelve el problema del cliente
+- El sistema de enrutamiento es deficiente
+Cómo reducir el abandono de llamadas 
+- Ofrecer opciones de autoservicio
+- Ofrecer servicio en múltiples canales
+- Capacitar a los agentes
+- Mejorar la experiencia del cliente
+- Utilizar software de Contact Center para cuantificar las llamadas abandonadas
+- Conocer los horarios en los que se reciben más llamadas
+Cómo medir el abandono de llamadas 
+- Dividir el número de llamadas abandonadas entre el número total de llamadas recibidas
+- Utilizar un sistema CRM y métricas de calidad
+Consideraciones
+- Lo que se considera una tasa de abandono aceptable varía según el sector 
+- La tasa de abandono puede variar a lo largo del día 
+
+-- Occupancy Rate: The percentage of time agents spend on calls versus idle time.
+TASA DE OCUPACIÓN: es la cantidad de tiempo que los agentes dedican a atender llamadas y actividades relacionadas. Se expresa como un porcentaje. 
+¿Por qué es importante medir la tasa de ocupación? 
+- Permite saber si hay suficientes agentes para atender las llamadas.
+- Evita que los agentes se agoten.
+- Permite ajustar los flujos de llamadas para que los agentes estén equilibrados.
+- Mejora la calidad del trabajo del call center.
+¿Cómo se calcula la tasa de ocupación?
+- Se calcula con la fórmula: % Ocupación = (Tiempo Operativo/Tiempo Productivo) x 100. 
+- Se mide en relación con el tiempo total de conexión en el sistema o del horario que cumplen en oficina. 
+¿Qué se recomienda para la tasa de ocupación? 
+- Mantener la tasa de ocupación entre el 80-85%.
+- Evitar la sobrecarga de los empleados.
+- Configurar el nivel óptimo de distribución de llamadas.
+- Tener en cuenta las horas pico.
+- Usar herramientas para la distribución automática de llamadas.
+
+
+-- Customer Satisfaction (CSAT): A score reflecting customer satisfaction with the service.
+TASA DE SATISFACCION DEL CLIENTE: es un indicador que mide el nivel de satisfacción de los clientes con el servicio. 
+Cómo se calcula
+- Se realiza una encuesta a los clientes 
+- Se les pide que califiquen su satisfacción en una escala, por ejemplo del 1 al 5 
+- Se suman los clientes que respondieron 4 y 5, es decir, satisfechos y muy satisfechos 
+- Se divide el resultado entre el número total de encuestas 
+- Se convierte el resultado en porcentaje 
+Qué se mide
+- La satisfacción del cliente en un call center se basa en la retroalimentación de los consumidores. Mide el porcentaje de clientes que están satisfechos con los servicios. 
+Cómo mejorar la satisfacción del cliente
+- Para mejorar la satisfacción del cliente en un call center, se puede trabajar en aspectos como: Resolución rápida, Soporte en tiempo real, Agente amigable. 
+
+
+-- Net Promoter Score (NPS): A measure of customer loyalty and willingness to recommend the service.
+PUNTUACIÓN NETA DE PROMOTOR: es una herramienta que mide la satisfacción del cliente en un call center. Se calcula restando el porcentaje de detractores del porcentaje de promotores. 
+Cómo se calcula 
+- Se presenta una encuesta a los clientes.
+- Se registran las respuestas.
+- Se calcula el porcentaje de promotores y detractores.
+- Se resta el porcentaje de detractores del porcentaje de promotores.
+- El resultado es la puntuación NPS.
+Qué indica la puntuación NPS 
+- Una puntuación más alta indica clientes más satisfechos y leales.
+- Una puntuación entre 0 y 6 indica clientes descontentos.
+- Una puntuación entre 7 y 8 indica clientes pasivos.
+- Una puntuación entre 9 y 10 indica clientes promotores.
+Beneficios de la NPS
+- La NPS ayuda a identificar clientes detractores, neutrales y promotores. Esto permite mejorar productos y servicios
+
+
+-- Call Volume: The total number of calls received over a period.
+VOLUMEN DE LLAMADAS: es el número de llamadas que recibe en un periodo de tiempo determinado. Es un indicador clave para predecir la demanda y planificar los recursos. 
+Cómo se mide
+- Se contabiliza la cantidad de llamadas que recibe un call center por día. 
+- Se establece una cuota mínima diaria para que los agentes puedan atender el mayor número de llamadas. 
+Cómo se proyecta 
+- Se recopilan datos históricos sobre el volumen de llamadas.
+- Se analizan los datos para identificar tendencias y patrones.
+- Se identifican los factores que influyen en las llamadas.
+- Se selecciona un método de proyección.
+- Se aplica el método de proyección a los datos históricos.
+Cómo se maneja un alto volumen de llamadas 
+- Se analizan los datos para entender por qué los clientes llaman más.
+- Se ofrecen opciones de devolución de llamada.
+- Se utilizan turnos específicos para agentes con más experiencia.
+- Se forma a nuevos agentes.
+- Se abren más canales de soporte, como chat en vivo, correo electrónico o redes sociales.
+- Se crea una base de datos de autoservicio.
+- Se invierte en soluciones de chatbot.
