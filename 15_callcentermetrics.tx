@@ -15,7 +15,14 @@ Cómo mejorar el AHT
 - Grabar las llamadas de los agentes para identificar deficiencias.
 - Utilizar las llamadas grabadas para capacitar a los agentes.
 Beneficios de un AHT bajo Mejora la satisfacción del cliente, Mejora el rendimiento y la productividad, Mejora la capacidad de atención al cliente, Optimiza los recursos
-
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    AVG((end_time - start_time) + hold_time + after_call_work_time) AS average_handle_time
+FROM 
+    Calls
+WHERE 
+    resolution_status = 'Resolved';
+----------------------------------------------------------------------------------------------------------
 
 ## First Call Resolution (FCR): The percentage of calls resolved on the first attempt.
 RESOLUCIÓN EN LA PRIMERA LLAMADA: mide la capacidad de un call center para resolver una llamada en el primer contacto. 
@@ -23,15 +30,26 @@ Es una herramienta para evaluar la calidad del servicio y la eficiencia del equi
 Cómo se calcula el FCR 
 - Se divide el número de llamadas resueltas en el primer contacto por el número total de llamadas.
 - El resultado se multiplica por 100 para obtener el porcentaje de FCR.
-
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    (COUNT(CASE WHEN resolution_status = 'Resolved' THEN 1 END) * 1.0 / COUNT(*)) * 100 AS fcr_percentage
+FROM 
+    Calls;
+----------------------------------------------------------------------------------------------------------
 
 ## Service Level: The percentage of calls answered within a specific time threshold (e.g., 80% of calls answered within 20 seconds).
 NIVEL DE SERVICIO: es una métrica que mide el porcentaje de llamadas atendidas en un tiempo determinado. Es una herramienta que permite evaluar la calidad del servicio y la experiencia del cliente. 
 Cómo se calcula 
 - Se expresa como "X% de llamadas respondidas en Y segundos".
 - Por ejemplo, un nivel de servicio de "80% de llamadas respondidas en 20 segundos" significa que el 80% de las llamadas entrantes deben ser respondidas en 20 segundos.
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    (COUNT(CASE WHEN (answer_time - start_time) <= 20 THEN 1 END) * 1.0 / COUNT(*)) * 100 AS service_level_percentage
+FROM 
+    Calls;
+----------------------------------------------------------------------------------------------------------
 
--- Abandonment Rate: The percentage of calls abandoned by customers before being answered.
+## Abandonment Rate: The percentage of calls abandoned by customers before being answered.
 ABANDONO DE LLAMADAS: es el porcentaje de llamadas que se cortan antes de que un agente atienda al cliente. Se considera un indicador de mal servicio al cliente. 
 Causas del abandono de llamadas 
 - Los clientes se frustran por los tiempos de espera
@@ -52,8 +70,14 @@ Cómo medir el abandono de llamadas
 Consideraciones
 - Lo que se considera una tasa de abandono aceptable varía según el sector 
 - La tasa de abandono puede variar a lo largo del día 
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    (COUNT(CASE WHEN resolution_status = 'Abandoned' THEN 1 END) * 1.0 / COUNT(*)) * 100 AS abandonment_rate
+FROM 
+    Calls;
+----------------------------------------------------------------------------------------------------------
 
--- Occupancy Rate: The percentage of time agents spend on calls versus idle time.
+## Occupancy Rate: The percentage of time agents spend on calls versus idle time.
 TASA DE OCUPACIÓN: es la cantidad de tiempo que los agentes dedican a atender llamadas y actividades relacionadas. Se expresa como un porcentaje. 
 ¿Por qué es importante medir la tasa de ocupación? 
 - Permite saber si hay suficientes agentes para atender las llamadas.
@@ -69,9 +93,18 @@ TASA DE OCUPACIÓN: es la cantidad de tiempo que los agentes dedican a atender l
 - Configurar el nivel óptimo de distribución de llamadas.
 - Tener en cuenta las horas pico.
 - Usar herramientas para la distribución automática de llamadas.
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    agent_id,
+    SUM(end_time - start_time) / SUM(end_time - start_time + idle_time) * 100 AS occupancy_rate
+FROM 
+    Calls
+GROUP BY 
+    agent_id;
+----------------------------------------------------------------------------------------------------------
 
 
--- Customer Satisfaction (CSAT): A score reflecting customer satisfaction with the service.
+## Customer Satisfaction (CSAT): A score reflecting customer satisfaction with the service.
 TASA DE SATISFACCION DEL CLIENTE: es un indicador que mide el nivel de satisfacción de los clientes con el servicio. 
 Cómo se calcula
 - Se realiza una encuesta a los clientes 
@@ -83,9 +116,22 @@ Qué se mide
 - La satisfacción del cliente en un call center se basa en la retroalimentación de los consumidores. Mide el porcentaje de clientes que están satisfechos con los servicios. 
 Cómo mejorar la satisfacción del cliente
 - Para mejorar la satisfacción del cliente en un call center, se puede trabajar en aspectos como: Resolución rápida, Soporte en tiempo real, Agente amigable. 
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    t.team_name,
+    AVG(c.satisfaction_score) AS avg_csat_score
+FROM 
+    Calls c
+JOIN 
+    Agents a ON c.agent_id = a.agent_id
+JOIN 
+    Teams t ON a.team_id = t.team_id
+GROUP BY 
+    t.team_name;
+----------------------------------------------------------------------------------------------------------
 
 
--- Net Promoter Score (NPS): A measure of customer loyalty and willingness to recommend the service.
+## Net Promoter Score (NPS): A measure of customer loyalty and willingness to recommend the service.
 PUNTUACIÓN NETA DE PROMOTOR: es una herramienta que mide la satisfacción del cliente en un call center. Se calcula restando el porcentaje de detractores del porcentaje de promotores. 
 Cómo se calcula 
 - Se presenta una encuesta a los clientes.
@@ -100,9 +146,22 @@ Qué indica la puntuación NPS
 - Una puntuación entre 9 y 10 indica clientes promotores.
 Beneficios de la NPS
 - La NPS ayuda a identificar clientes detractores, neutrales y promotores. Esto permite mejorar productos y servicios
+----------------------------------------------------------------------------------------------------------
+WITH NPS_Data AS (
+    SELECT 
+        (COUNT(CASE WHEN satisfaction_score >= 9 THEN 1 END) - 
+         COUNT(CASE WHEN satisfaction_score <= 6 THEN 1 END)) * 1.0 / COUNT(*) * 100 AS nps_score
+    FROM 
+        Calls
+)
+SELECT 
+    nps_score
+FROM 
+    NPS_Data;
+----------------------------------------------------------------------------------------------------------
 
 
--- Call Volume: The total number of calls received over a period.
+## Call Volume: The total number of calls received over a period.
 VOLUMEN DE LLAMADAS: es el número de llamadas que recibe en un periodo de tiempo determinado. Es un indicador clave para predecir la demanda y planificar los recursos. 
 Cómo se mide
 - Se contabiliza la cantidad de llamadas que recibe un call center por día. 
@@ -121,3 +180,14 @@ Cómo se maneja un alto volumen de llamadas
 - Se abren más canales de soporte, como chat en vivo, correo electrónico o redes sociales.
 - Se crea una base de datos de autoservicio.
 - Se invierte en soluciones de chatbot.
+----------------------------------------------------------------------------------------------------------
+SELECT 
+    DATE(start_time) AS call_date,
+    COUNT(*) AS call_volume
+FROM 
+    Calls
+GROUP BY 
+    DATE(start_time)
+ORDER BY 
+    call_date;
+----------------------------------------------------------------------------------------------------------
