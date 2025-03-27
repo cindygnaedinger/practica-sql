@@ -22,8 +22,8 @@ WITH CTE_llamadas_por_mes AS (
         t.team_id,
         t.team_name,
         EXTRACT(MONTH FROM c.call_date) AS month,
-        AVG(c.satisfaction_score) AS promedio_csat,
-        COUNT(c.call_id) AS total_llamadas
+        AVG(c.satisfaction_score) AS promedio_csat, 
+        COUNT(c.call_id) AS total_llamadas --Por qué aquí: Las agregaciones (AVG, COUNT) son costosas. Hacerlas    una sola vez y filtrar después.
     FROM calls c 
     INNER JOIN agents a ON c.agent_id = a.agent_id
     INNER JOIN teams t ON a.team_id = t.team_id
@@ -40,6 +40,18 @@ SELECT
     END AS month_name,
     promedio_csat,
     ROUND(
-    (promedio_satisfaccion_equipo - LAG(promedio_satisfaccion_equipo) OVER(PARTITION BY t.team_name ORDER BY month)) / LAG(promedio_satisfaccion_equipo) OVER(PARTITION BY t.team_name ORDER BY month) * 100, 1) AS porcentaje_cambio
+    (promedio_satisfaccion_equipo - LAG(promedio_satisfaccion_equipo) OVER(PARTITION BY t.team_name ORDER BY month)) / LAG(promedio_satisfaccion_equipo) OVER(PARTITION BY t.team_name ORDER BY month) * 100, 1) AS porcentaje_cambio -- Por qué aquí: LAG() necesita datos ya agrupados por equipo/mes. No puede aplicarse sobre datos crudos.
 FROM CTE_llamadas_por_mes
 ORDER BY team_name, month;
+
+-- a. "No hagas JOINs innecesarios"
+-- Cada JOIN es como un corte adicional: aumenta el riesgo de "sangrado" (datos duplicados o ralentización).
+
+-- b. "Filtra temprano, filtra a menudo"
+-- Usa WHERE antes de agrupar, y HAVING después.
+
+-- c. "CTEs son tus aliadas, no tus muletas"
+-- Usa CTEs para pasos lógicos claros, pero no abuses (cada CTE es un "campo quirúrgico" nuevo).
+
+-- d. "Prueba cada capa como si fuera la última"
+-- Ejecuta cada CTE por separado para verificar que devuelve lo esperado.
