@@ -43,3 +43,15 @@ GROUP BY a.agent_id, a.agent_name;
 -- Se requiere autorización especial.
 
 -- Ejemplo: Un reembolso grande que solo un manager puede aprobar.
+
+SELECT *
+FROM calls
+WHERE agent_id = 357 AND status = 'Escalated';
+
+-- Hallazgo: Las llamadas escaladas ¡tienen CSAT alto! Esto es raro (normalmente los clientes escalan cuando están insatisfechos).
+
+-- Paso 3 - Hipótesis:
+
+-- Posible manipulación de datos: El agente marca llamadas como "Escaladas" pero pone CSAT alto artificialmente.
+
+-- Error en el sistema: Las llamadas escaladas no deberían permitir evaluación CSAT.
