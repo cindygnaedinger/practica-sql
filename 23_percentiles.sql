@@ -1,4 +1,4 @@
--- 📌 Percentil vs. Porcentaje vs. Ranking: La Explicación Sencilla
+-- 📌 Percentil vs. Porcentaje vs. Ranking
 -- 🔢 Percentil = "El lugar donde caes en una fila ordenada"
 -- Imagina que 100 agentes de call center están ordenados en una fila del más rápido al más lento resolviendo llamadas.
 
@@ -65,7 +65,7 @@
 -- 🏆 Desafío Práctico
 -- "Si el P75 de CSAT es 4.5 (en escala de 1-5), ¿qué significa?"
 
--- <details> <summary>💡 Respuesta</summary> Que el <strong>75% de las llamadas</strong> tienen un CSAT <strong>≤4.5</strong>, y el 25% restante tiene scores <strong>más altos</strong> (4.6, 5, etc.). </details>
+-- Que el 75% de las llamadas tienen un CSAT ≤4.5, y el 25% restante tiene scores más altos (4.6, 5, etc.). 
 -- ✅ En resumen
 -- Percentil: Te dice cómo se compara un valor frente al resto (útil para umbrales).
 
