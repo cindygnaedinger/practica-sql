@@ -72,3 +72,76 @@
 -- Ranking: Te dice la posición exacta en una lista (útil para top 10, #1, etc.).
 
 -- Porcentaje: Es una proporción cruda (ej: "10% de llamadas son quejas").
+
+📊 Percentiles en BigQuery 
+(Como si fuera una fila de agentes en un call center)
+
+🎯 ¿Qué es un percentil?
+Imagina que ordenas a 100 agentes del más rápido al más lento atendiendo llamadas:
+
+Percentil 50 (P50): El agente #50 (la mediana).
+
+Percentil 90 (P90): El agente #90 (solo el 10% es más lento que él).
+
+🔢 Los 3 Tipos de Percentiles en BigQuery
+1. PERCENTILE_CONT → "El justo"
+Calcula el valor exacto del percentil, incluso si no existe en tus datos (interpola).
+
+Ejemplo:
+
+sql
+Copy
+SELECT PERCENTILE_CONT(duration_sec, 0.5) OVER() AS mediana
+FROM calls;
+Si el P50 cae entre dos valores (ej: 200 y 210 segs), devuelve 205 (promedio).
+
+2. PERCENTILE_DISC → "El realista"
+Elige el valor real más cercano en tus datos.
+
+Ejemplo:
+
+SELECT PERCENTILE_DISC(duration_sec, 0.9) OVER() AS p90
+FROM calls;
+Si tus datos son [100, 200, 300], el P90 es 300 (no interpola).
+
+3. APPROX_QUANTILES → "El rápido para big data"
+Aproximado pero eficiente (ideal para millones de filas).
+
+Ejemplo:
+
+SELECT APPROX_QUANTILES(duration_sec, 100)[OFFSET(90)] AS p90_aproximado
+FROM calls;
+100 = divide los datos en 100 partes (percentiles).
+
+[OFFSET(90)] = devuelve el P90.
+
+📌 ¿Cuándo Usar Cada Uno?
+PERCENTILE_CONT: Para métricas continuas (ej: tiempo, dinero). ✅
+
+PERCENTILE_DISC: Para datos enteros (ej: número de llamadas, ratings). ✅
+
+APPROX_QUANTILES: Cuando tienes muchísimos datos y no necesitas precisión extrema. ✅
+
+❌ Error Común
+Usar PERCENTILE_DISC para duraciones de llamadas (ej: 150.5 segs) puede dar resultados menos precisos que PERCENTILE_CONT.
+
+🏆 Ejemplo Real en un Call Center
+Pregunta: "¿Cuál es el tiempo máximo que dura el 95% de las llamadas?"
+
+-- Respuesta con PERCENTILE_CONT
+SELECT PERCENTILE_CONT(duration_sec, 0.95) OVER() AS p95
+FROM calls;
+Resultado: 320 segundos → Solo el 5% de las llamadas supera este tiempo.
+
+💡 Truco Visual
+Imagina una escalera donde cada escalón es un percentil:
+
+CONT suaviza los escalones (interpola).
+
+DISC mantiene los escalones tal cual.
+
+✅ Resumen Final
+Función	¿Qué hace?	Ejemplo de Uso
+PERCENTILE_CONT	Interpola valores	Duración promedio de llamadas
+PERCENTILE_DISC	Toma valores existentes	Ratings de CSAT (1, 2, 3, 4, 5)
+APPROX_QUANTILES	Aproximación rápida	Big Data (millones de filas)
