@@ -28,3 +28,18 @@ SELECT
 FROM agentes a 
 LEFT JOIN ventas v ON a.agente_id = v.agente_id 
 WHERE v.venta_id IS NULL;
+
+-- 📝 Ejercicio 3: RIGHT JOIN
+-- Pregunta:
+-- "Identifica clientes que han hecho compras pero NO tienen registros de llamadas en el sistema. Muestra su nombre y plan contratado."
+
+-- Tu tarea:
+-- Usa RIGHT JOIN (o LEFT JOIN si prefieres).
+
+SELECT 
+    c.nombre AS nombre_cliente,
+    c.plan_contratado
+FROM clientes c
+INNER JOIN ventas v ON c.cliente_id = v.cliente_id
+LEFT JOIN llamadas l ON c.cliente_id = l.cliente_id
+WHERE l.llamada_id IS NULL;
