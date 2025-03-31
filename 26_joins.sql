@@ -56,5 +56,25 @@ SELECT
     l.llamada_id
 FROM agentes a 
 FULL JOIN llamadas l ON a.agente_id = l.agent_id
-WHERE (a.equipo = 'Premium' OR l.duracion_seg > 300)
-OR (a.agente_id IS NULL OR l.agent_id IS NULL);
+WHERE (a.equipo = 'Premium' AND a.agente_id IS NOT NULL)
+   OR (l.duracion_seg > 300 AND l.agente_id IS NOT NULL)
+   OR (a.agente_id IS NULL OR l.agente_id IS NULL)
+
+-- 📝 Ejercicio 5: SELF JOIN
+-- Pregunta:
+-- "Encuentra agentes que pertenecen al mismo equipo y fueron contratados en el mismo mes. Muestra sus nombres y el equipo."
+
+-- Tu tarea:
+-- Usa SELF JOIN sobre la tabla agentes.
+WITH agentes_filtrados AS (
+  SELECT * FROM agentes WHERE equipo = 'Premium' 
+) -- hacemos una tabla temporal para filtrar por equipos y reducir el costo de la consulta
+SELECT 
+    a1.nombre AS agente_uno,
+    a2.nombre AS agente_uno,
+    a1.equipo,
+    a1.fecha_contratacion
+FROM agentes a1 
+INNER JOIN agentes a2 ON a1.equipo = a2.equipo
+AND DATETRUNC(a1.fecha_contratacion, MONTH) = DATETRUNC(a2.fecha_contratacion, MONTH) -- encunetra agentes del mismo equipo contratados el mismo mes, no necesariamente la misma fecha
+AND a1.agent_id > a2.agent_id; -- para que no empareje al mismo agente consigo mismo o que repita a-b, b-a
