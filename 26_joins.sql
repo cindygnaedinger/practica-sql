@@ -43,3 +43,18 @@ FROM clientes c
 INNER JOIN ventas v ON c.cliente_id = v.cliente_id
 LEFT JOIN llamadas l ON c.cliente_id = l.cliente_id
 WHERE l.llamada_id IS NULL;
+
+-- 📝 Ejercicio 4: FULL OUTER JOIN
+-- Pregunta:
+-- "Genera un listado completo de agentes y llamadas, incluso si algunos agentes no tienen llamadas registradas o algunas llamadas no tienen agente asignado (por errores de datos)."
+-- "Modifica la consulta para incluir solo agentes del equipo 'Premium' o llamadas con duración > 300 segundos."
+
+-- Tu tarea:
+-- Usa FULL OUTER JOIN (en BigQuery es FULL JOIN).
+SELECT
+    a.nombre AS agente_nombre,
+    l.llamada_id
+FROM agentes a 
+FULL JOIN llamadas l ON a.agente_id = l.agent_id
+WHERE (a.equipo = 'Premium' OR l.duracion_seg > 300)
+OR (a.agente_id IS NULL OR l.agent_id IS NULL);
