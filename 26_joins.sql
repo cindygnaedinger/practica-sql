@@ -78,3 +78,18 @@ FROM agentes a1
 INNER JOIN agentes a2 ON a1.equipo = a2.equipo
 AND DATETRUNC(a1.fecha_contratacion, MONTH) = DATETRUNC(a2.fecha_contratacion, MONTH) -- encunetra agentes del mismo equipo contratados el mismo mes, no necesariamente la misma fecha
 AND a1.agent_id > a2.agent_id; -- para que no empareje al mismo agente consigo mismo o que repita a-b, b-a
+
+-- 📝 Ejercicio 6: CROSS JOIN
+-- Pregunta:
+-- "Para una campaña especial, queremos asignar a todos los agentes del equipo 'Premium' a todos los clientes con plan 'Empresarial'. Genera todas las combinaciones posibles."
+
+-- Tu tarea:
+-- Usa CROSS JOIN.
+
+SELECT 
+    a.nombre AS agente_nombre,
+    c.nombre AS cliente_nombre
+FROM (SELECT * FROM agentes WHERE equipo = 'Premium') a 
+CROSS JOIN (SELECT * FROM clientes WHERE equipo = 'Empresarial') c
+LIMIT 10000; -- Para grandes volúmenes de datos, generalmente es mejor usar subconsultas directamente en el FROM en lugar de WITH
+
