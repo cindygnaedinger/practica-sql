@@ -138,3 +138,27 @@ INNER JOIN clientes c ON v.cliente_id = c.cliente_id
 LEFT JOIN llamadas_recientes l ON v.agente_id = l.agente_id 
                    AND v.cliente_id = l.cliente_id
                    AND DATE(l.fecha_hora) = DATE(v.fecha)
+
+
+-- INFORMATION_SCHEMA.JOBS: es una vista metadatos en BigQuery que te permite:
+
+-- Monitorear el consumo de tus consultas
+
+-- Identificar consultas costosas
+
+-- Optimizar el uso de recursos
+
+SELECT
+  job_id,
+  query,
+  total_bytes_processed,
+  total_bytes_billed,
+  total_slot_ms,
+  TIMESTAMP_DIFF(end_time, start_time, MILLISECOND) AS duration_ms,
+  user_email,
+  creation_time
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE DATE(creation_time) = CURRENT_DATE()
+  AND job_type = 'QUERY'
+ORDER BY total_bytes_billed DESC
+LIMIT 10;
