@@ -93,3 +93,48 @@ FROM (SELECT * FROM agentes WHERE equipo = 'Premium') a
 CROSS JOIN (SELECT * FROM clientes WHERE equipo = 'Empresarial') c
 LIMIT 10000; -- Para grandes volúmenes de datos, generalmente es mejor usar subconsultas directamente en el FROM en lugar de WITH
 
+-- 📝 Ejercicio 7: JOIN con Múltiples Tablas
+-- Pregunta:
+-- "Muestra todas las ventas realizadas, incluyendo: nombre del agente, nombre del cliente, duración de la llamada asociada (si existe) y monto."
+
+-- Tu tarea:
+-- Combina JOINs entre 3 tablas: ventas, agentes, clientes y llamadas.
+
+SELECT 
+    v.venta_id,
+    a.nombre AS agente_nombre,
+    c.nombre AS cliente_nombre,
+    l.duracion_seg,
+    v.monto,
+    v.fecha AS fecha_venta,
+    l.fecha_hora AS fecha_llamada
+FROM ventas v 
+INNER JOIN agentes a ON v.agente_id = a.agente_id 
+INNER JOIN clientes c ON v.cliente_id = c.cliente_id 
+LEFT JOIN llamadas l ON v.agente_id = l.agente_id
+    AND v.cliente_id = l.cliente_id
+    AND DATE(l.fecha_hora) = DATE(v.fecha) -- asume la venta en el mismo día
+WHERE v.fecha BETWEEN '2023-01-01' AND '2023-12-31'; -- filtro temporal para performance, reducir la cantidad de datos procesados
+
+-- para optimizar la query puedo hacer dos cte que filtren por los utlimos 30 días:
+WITH ventas_recientes AS (
+  SELECT * FROM ventas 
+  WHERE fecha >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+),
+llamadas_recientes AS (
+  SELECT * FROM llamadas
+  WHERE fecha_hora >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+)
+
+SELECT 
+    v.venta_id,
+    a.nombre AS agente_nombre,
+    c.nombre AS cliente_nombre,
+    l.duracion_seg,
+    v.monto
+FROM ventas_recientes v
+INNER JOIN agentes a ON v.agente_id = a.agente_id
+INNER JOIN clientes c ON v.cliente_id = c.cliente_id
+LEFT JOIN llamadas_recientes l ON v.agente_id = l.agente_id 
+                   AND v.cliente_id = l.cliente_id
+                   AND DATE(l.fecha_hora) = DATE(v.fecha)
