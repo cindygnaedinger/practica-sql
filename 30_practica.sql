@@ -71,3 +71,36 @@ ranking <= 5
 ORDER BY 
 categoria,
 total_ordenes DESC;
+
+-- "Para cada categoría, muestra:
+
+-- Ventas del mes actual
+
+-- Ventas del mes anterior
+
+-- Diferencia porcentual vs mes anterior
+
+-- Ranking de categorías por ventas dentro de cada mes
+
+-- Usa solo datos de 2024 y ordena por mes (nuevo a viejo) y luego por ranking."
+
+WITH ventas_mes AS (
+    SELECT 
+    month,
+    category,
+    total_sales AS ventas_actuales,
+    LAG(total_sales) OVER(PARTITION BY category ORDER BY month) AS ventas_previas,
+    RANK() OVER(PARTITION BY month ORDER BY total_sales DESC) AS ranking_mes
+FROM ecommerce.monthly_sales
+WHERE
+EXTRACT(YEAR FROM month) = '2024'
+)
+SELECT 
+month,
+category,
+ventas_actuales,
+ventas_previas,
+ROUND(SAFE_DIVIDE((ventas_actuales - ventas_previas), ventas_previas) * 100, 2) AS incremento_porcentual,
+ranking_mes
+FROM ventas_mes
+ORDER BY month DESC, ranking_mes;
