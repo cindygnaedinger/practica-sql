@@ -104,3 +104,25 @@ ROUND(SAFE_DIVIDE((ventas_actuales - ventas_previas), ventas_previas) * 100, 2) 
 ranking_mes
 FROM ventas_mes
 ORDER BY month DESC, ranking_mes;
+
+-- Escribe una consulta que obtenga todas las llamadas del 1 de noviembre de 2023 que duraron más de 2 minutos (120 segundos), mostrando solo:
+
+-- llamada_id
+
+-- fecha_hora
+
+-- duracion_segundos
+
+-- tipo_llamada
+
+-- Ordena los resultados por duración (de mayor a menor).
+
+SELECT 
+  llamada_id, 
+  fecha_hora, 
+  duracion_segundos, 
+  tipo_llamada 
+FROM llamadas 
+WHERE fecha_hora BETWEEN TIMESTAMP('2023-11-01') AND TIMESTAMP('2023-11-02')
+  AND duracion_segundos > 120 
+ORDER BY duracion_segundos DESC;
