@@ -46,3 +46,28 @@ GROUP BY
   año, mes
 ORDER BY 
   año, mes;
+
+-- "Encuentra los 5 productos más vendidos (por cantidad de órdenes) en cada categoría durante el Q1 de 2024, mostrando categoría, nombre de producto y total de órdenes."
+
+WITH ventas_por_producto AS (
+    SELECT 
+    p.categoria,
+    p.nombre,
+    COUNT(o.order_id) AS total_ordenes,
+    RANK() OVER(PARTITION BY p.categoria ORDER BY COUNT(o.order_id) DESC) AS ranking
+FROM ecommerce.orders o 
+JOIN ecommerce.products p ON o.product_id = p.product_id
+WHERE o._PARTITIONDATE BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY p.categoria, p.nombre
+)
+SELECT 
+categoria,
+nombre,
+total_ordenes
+FROM 
+ventas_por_producto
+WHERE
+ranking <= 5
+ORDER BY 
+categoria,
+total_ordenes DESC;
