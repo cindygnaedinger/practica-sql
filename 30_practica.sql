@@ -144,3 +144,22 @@ FROM llamadas
 GROUP BY agente_id 
 HAVING cantidad_llamadas > 10
 ORDER BY cantidad_llamadas DESC;
+
+-- Mostrar:
+
+-- Nombre del agente (de la tabla agentes)
+
+-- Su equipo de trabajo
+
+-- Los mismos KPIs del ejercicio anterior
+SELECT 
+  a.equipo,
+  a.nombre,
+  COUNT(l.llamada_id) AS cantidad_llamadas, 
+  ROUND(AVG(l.duracion_segundos)/60, 2) AS duracion_promedio_minutos  
+FROM llamadas l 
+INNER JOIN agentes a ON l.agente_id = a.agente_id 
+WHERE a.estado = 'activo'
+GROUP BY l.agente_id, a.nombre, a.equipo
+HAVING cantidad_llamadas > 10
+ORDER BY a.equipo, cantidad_llamadas DESC;
