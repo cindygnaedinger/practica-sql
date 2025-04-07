@@ -126,3 +126,21 @@ FROM llamadas
 WHERE fecha_hora BETWEEN TIMESTAMP('2023-11-01') AND TIMESTAMP('2023-11-02')
   AND duracion_segundos > 120 
 ORDER BY duracion_segundos DESC;
+
+-- Mostrar para cada agente:
+
+-- Su ID
+
+-- Cantidad total de llamadas atendidas
+
+-- Duración promedio por llamada (en minutos)
+
+-- Solo agentes con más de 10 llamadas
+SELECT 
+  agente_id, 
+  COUNT(llamada_id) AS cantidad_llamadas, 
+  ROUND(AVG(duracion_segundos)/60, 2) AS duracion_promedio_minutos  
+FROM llamadas 
+GROUP BY agente_id 
+HAVING cantidad_llamadas > 10
+ORDER BY cantidad_llamadas DESC;
