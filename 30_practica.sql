@@ -163,3 +163,53 @@ WHERE a.estado = 'activo'
 GROUP BY l.agente_id, a.nombre, a.equipo
 HAVING cantidad_llamadas > 10
 ORDER BY a.equipo, cantidad_llamadas DESC;
+
+-- Contexto: Analizar patrones de llamadas por hora del día.
+-- Tarea:
+-- Mostrar la distribución de llamadas por hora (0-23)
+
+-- Calcular para cada hora:
+
+-- Volumen total de llamadas
+
+-- Duración promedio (minutos)
+
+-- Porcentaje del total diario
+
+-- Tabla: llamadas (mismos campos)
+
+-- Requisitos:
+
+-- Usar EXTRACT(HOUR FROM fecha_hora)
+
+-- Calcular porcentaje sobre el total diario
+
+-- Solo día 15/11/2023
+
+-- Ordenar por hora
+
+-- Reto adicional: ¿Cómo harías para mostrar "AM/PM" junto a la hora?
+WITH datos_dia AS ( 
+SELECT 
+  EXTRACT(HOUR FROM fecha_hora) AS hora_llamada,
+  COUNT(llamada_id) AS volumen_llamadas,
+  ROUND(AVG(duracion_segundos) / 60, 2) AS duracion_promedio_minutos
+  
+FROM llamadas 
+WHERE fecha_hora BETWEEN TIMESTAMP('2023-11-15') AND TIMESTAMP('2023-11-16')
+GROUP BY hora_llamada
+),
+ total_diario AS (
+  SELECT
+    SUM(volumen_llamadas) AS total 
+    FROM datos_dia
+ )
+SELECT
+  d.hora_llamada,
+  FORMAT_TIMESTAMP('%I %p', TIMESTAMP('2023-11-15', d.hora, 0, 0)) AS hora_formato_am_pm,
+  d.volumen_llamadas,
+  d.duracion_promedio_minutos,
+  ROUND((d.volumen_llamadas * 100.0) / t.total, 2) AS porcentaje
+FROM datos_dia d 
+CROSS JOIN total_diario t 
+ORDER BY d.hora_llamada;
