@@ -213,3 +213,28 @@ SELECT
 FROM datos_dia d 
 CROSS JOIN total_diario t 
 ORDER BY d.hora_llamada;
+
+-- Escribe una consulta que muestre:
+
+-- El nombre del departamento.
+
+-- El total de ventas (suma de montos).
+
+-- El número de ventas (conteo).
+
+-- Solo para departamentos con más de 5 ventas registradas.
+-- Ordena los resultados por total de ventas (descendente).
+SELECT 
+    d.nombre AS departamento,
+    SUM(v.monto) AS total_ventas,
+    COUNT(v.id) AS cantidad_ventas
+FROM 
+    departamentos d
+JOIN 
+    ventas v ON d.id = v.departamento_id
+GROUP BY 
+    d.nombre
+HAVING 
+    COUNT(v.id) > 5
+ORDER BY 
+    total_ventas DESC;
