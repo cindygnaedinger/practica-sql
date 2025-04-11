@@ -238,3 +238,27 @@ HAVING
     COUNT(v.id) > 5
 ORDER BY 
     total_ventas DESC;
+
+-- Escribe una consulta SQL que muestre:
+
+-- Nombre del cliente y email.
+
+-- Cantidad total de pedidos que ha realizado.
+
+-- Monto total gastado en todos sus pedidos.
+
+-- Requisitos:
+
+-- Solo incluir clientes que hayan registrado más de 1 pedido.
+
+-- Ordenar los resultados por monto total gastado (de mayor a menor).
+SELECT 
+c.nombre, 
+c.email, 
+COUNT(p.id) AS total_pedido,
+SUM(p.monto) AS monto_total_gastado
+FROM clientes c  
+INNER JOIN pedidos p ON c.id = p.cliente_id
+GROUP BY c.nombre, c.email
+HAVING COUNT(p.id) > 1
+ORDER BY monto_total_gastado DESC; 
